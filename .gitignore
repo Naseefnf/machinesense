@@ -14,3 +14,10 @@ dist/
 
 # VS Code
 .vscode/
+
+# Test files
+test_upload/
+test_upload.zip
+
+# Upload data
+backend/uploads/
