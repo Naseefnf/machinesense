@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 from app.database import get_session
 from app.models import Company
-from app.schemas import CompanyRegister, CompanyLogin
+from app.schemas import CompanyRegister
 from app.security import hash_password, verify_password, create_access_token
 
 router=APIRouter()
@@ -25,11 +26,11 @@ def register(data: CompanyRegister, session: Session = Depends(get_session)):
 
 
 @router.post("/login")
-def login(data: CompanyLogin, session: Session = Depends(get_session)):
-    company = session.exec(select(Company).where(Company.email == data.email)).first()
+def login(data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
+    company = session.exec(select(Company).where(Company.email == data.username)).first()
     if not company:
         raise HTTPException(status_code=404, detail="Company not found")
-    if not verify_password(data.password,company.password_hash):
+    if not verify_password(data.password, company.password_hash):
         raise HTTPException(status_code=401, detail="Wrong password")
     token = create_access_token(company.id)
     return {"access_token": token, "token_type": "bearer"}

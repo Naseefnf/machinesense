@@ -1,6 +1,10 @@
 from passlib.context import CryptContext
 from jose import jwt
 from datetime import timedelta, datetime
+from fastapi import Depends, HTTPException
+from fastapi.security import  OAuth2PasswordBearer
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 SECRET_KEY = "machinesense-secret-key"
 ALGORITHM = "HS256"
@@ -20,3 +24,12 @@ def create_access_token(company_id: int) ->  str:
     }
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
+def get_current_company(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        company_id = payload.get("company_id")
+        if company_id is None:
+            raise HTTPException(status_code=401, detail="Invalid Token")
+        return company_id
+    except:
+        raise HTTPException(status_code=401, detail="Invalid Token")
