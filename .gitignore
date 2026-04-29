@@ -21,3 +21,11 @@ test_upload.zip
 
 # Upload data
 backend/uploads/
+
+
+# Trained models
+backend/trained_models/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+ml/__pycache__/
