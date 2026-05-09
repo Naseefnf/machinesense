@@ -9,11 +9,12 @@ router = APIRouter()
 
 @router.post("/")
 def train(
-    company_id: int = Depends(get_current_company),
+    current: dict = Depends(get_current_company),
     session: Session = Depends(get_session)
 ):
     try:
         # Step 1: Run training
+        company_id = current["company_id"]
         result = train_model(company_id)
 
         # Step 2: Save to TrainLog

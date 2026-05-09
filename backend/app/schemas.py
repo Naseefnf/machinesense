@@ -13,3 +13,8 @@ class CompanyLogin(BaseModel):
 class MachineUpdate(BaseModel):
     description: Optional[str] = None
     safety_warning: Optional[str] = None
+
+class EmployeeRegister(BaseModel):
+    name: str
+    email: EmailStr
+    password: str
