@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.applications import ResNet50
-from tensorflow.keras.layers import GlobalAveragePooling2D, Dense
+from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout
 from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import os
@@ -21,7 +21,13 @@ def train_model(company_id: int, epochs: int = 10):
     # Step 3: Data generators
     datagen = ImageDataGenerator(
         preprocessing_function=tf.keras.applications.resnet50.preprocess_input,
-        validation_split=0.2
+        validation_split=0.2,
+        rotation_range=20,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        horizontal_flip=True,
+        zoom_range=0.2,
+        brightness_range=[0.8, 1.2]
     )
 
     train_data = datagen.flow_from_directory(
@@ -46,6 +52,7 @@ def train_model(company_id: int, epochs: int = 10):
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
     x = Dense(256, activation="relu")(x)
+    x = Dropout(0.5)(x)
     output = Dense(num_classes, activation="softmax")(x)
     model = Model(inputs=base_model.input, outputs=output)
 
@@ -65,8 +72,10 @@ def train_model(company_id: int, epochs: int = 10):
 
     # Step 7: Return results
     accuracy = round(float(history.history['accuracy'][-1]) * 100, 2)
+    val_accuracy = round(float(history.history['val_accuracy'][-1]) * 100, 2)
     return {
         "accuracy": accuracy,
+        "val_accuracy": val_accuracy, 
         "num_classes": num_classes,
         "classes": classes,
         "model_path": model_save_path

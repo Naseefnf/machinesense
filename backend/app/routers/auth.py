@@ -32,5 +32,9 @@ def login(data: OAuth2PasswordRequestForm = Depends(), session: Session = Depend
         raise HTTPException(status_code=404, detail="Company not found")
     if not verify_password(data.password, company.password_hash):
         raise HTTPException(status_code=401, detail="Wrong password")
-    token = create_access_token(company.id)
-    return {"access_token": token, "token_type": "bearer"}
+    token = create_access_token(company.id, role="manager")
+    return {
+    "access_token": token,
+    "token_type": "bearer",
+    "role": "manager"
+}

@@ -13,9 +13,10 @@ router = APIRouter()
 @router.post("/upload")
 async def upload_images(
     file: UploadFile = File(...),
-    company_id: int = Depends(get_current_company),
+    current: dict = Depends(get_current_company),
     session: Session = Depends(get_session)
 ):
+    company_id = current["company_id"]
     company_folder = os.path.join("uploads", str(company_id))
     os.makedirs(company_folder, exist_ok=True)
     zip_path = os.path.join(company_folder, "upload.zip")
@@ -44,9 +45,10 @@ async def upload_images(
 
 @router.get("/")
 def get_machines(
-    company_id: int = Depends(get_current_company),
+    current: dict = Depends(get_current_company),
     session: Session = Depends(get_session)
 ):
+    company_id = current["company_id"]
     machines = session.exec(select(Machine).where(Machine.company_id == company_id)).all()
     return machines
     
@@ -54,9 +56,10 @@ def get_machines(
 def update_machine(
     machine_id: int,
     data: MachineUpdate,
-    company_id:  int = Depends(get_current_company),
+    current: dict = Depends(get_current_company),
     session: Session = Depends(get_session)
 ):
+    company_id = current["company_id"]    
     machine = session.exec(select(Machine).where(Machine.id == machine_id, Machine.company_id == company_id)).first()
     if not machine:
         raise HTTPException(status_code=404, detail="Machine not found")
@@ -71,13 +74,33 @@ def update_machine(
 
 @router.delete("/{machine_id}")
 def delete_machine(
-    machine_id:  int,
-    company_id:  int = Depends(get_current_company),
+    machine_id: int,
+    current: dict = Depends(get_current_company),
     session: Session = Depends(get_session)
 ):
-    machine = session.exec(select(Machine).where(Machine.id == machine_id, Machine.company_id == company_id)).first()
+    company_id = current["company_id"]
+    machine = session.exec(select(Machine).where(
+        Machine.id == machine_id,
+        Machine.company_id == company_id
+    )).first()
+    
     if not machine:
         raise HTTPException(status_code=404, detail="Machine not found")
+    
+    # Delete image folder too!
+    folder_path = os.path.join("uploads", str(company_id), machine.label)
+    if os.path.exists(folder_path):
+        shutil.rmtree(folder_path)
+
+    # Delete trained model to force retrain
+    model_path = os.path.join("trained_models", f"{company_id}_model.h5")
+    label_path = os.path.join("trained_models", f"{company_id}_labels.json")
+
+    if os.path.exists(model_path):
+        os.remove(model_path)
+    if os.path.exists(label_path):
+        os.remove(label_path)
+    
     session.delete(machine)
     session.commit()
     return {"message": "Machine deleted successfully"}
