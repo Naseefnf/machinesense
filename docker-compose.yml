@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: machinesense-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/trained_models:/app/trained_models
+      - ./backend/machinesense.db:/app/machinesense.db
+
+  frontend:
+    build: ./frontend
+    container_name: machinesense-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend

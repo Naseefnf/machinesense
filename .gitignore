@@ -29,3 +29,6 @@ backend/trained_models/
 # Jupyter checkpoints
 .ipynb_checkpoints/
 ml/__pycache__/
+
+frontend/.env
+backend/.env
