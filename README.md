@@ -119,32 +119,35 @@ Image Storage
 machinesense/
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml      ← CI/CD pipeline
+│       └── deploy.yml
 ├── backend/
 │   ├── app/
 │   │   ├── ml/
-│   │   │   ├── train.py    ← ResNet50 training pipeline
-│   │   │   └── predict.py  ← Prediction pipeline
+│   │   │   ├── train.py
+│   │   │   └── predict.py
 │   │   ├── routers/
-│   │   │   ├── auth.py     ← Registration & Login
-│   │   │   ├── machines.py ← Machine management
-│   │   │   ├── train.py    ← Training endpoint
-│   │   │   ├── predict.py  ← Prediction endpoint
-│   │   │   └── users.py    ← Employee management
-│   │   ├── models.py       ← Database tables
-│   │   ├── schemas.py      ← Pydantic schemas
-│   │   ├── database.py     ← DB engine & session
-│   │   └── security.py     ← JWT & password hashing
+│   │   │   ├── auth.py
+│   │   │   ├── machines.py
+│   │   │   ├── train.py
+│   │   │   ├── predict.py
+│   │   │   └── users.py
+│   │   ├── database.py
+│   │   ├── models.py
+│   │   ├── schemas.py
+│   │   └── security.py
 │   ├── Dockerfile
 │   ├── main.py
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
-│   │   ├── pages/          ← 8 React pages
-│   │   ├── components/     ← Navbar, ProtectedRoute
+│   │   ├── components/
+│   │   │   ├── Navbar.js
+│   │   │   └── ProtectedRoute.js
+│   │   ├── pages/
 │   │   └── services/
-│   │       └── api.js      ← Axios API calls
-│   └── Dockerfile
+│   │       └── api.js
+│   ├── Dockerfile
+│   └── package.json
 ├── docker-compose.yml
 └── README.md
 
